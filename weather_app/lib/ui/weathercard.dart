@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:weather_app/api/weatherapi.dart' as api;
 import 'package:weather_app/api/weatherapi.dart';
+import 'package:weather_app/model/citymodel.dart';
 
 class WeatherCard extends StatefulWidget {
   const WeatherCard({
@@ -15,19 +15,11 @@ class _WeatherCardState extends State<WeatherCard> {
   String weatherImage = 'assets/images/sun.png';
   Map weather;
   List features;
-
-  void getCatData() async {
-    weather = await WeatherAPI().getWeatherData('Lagos');
-    print(weather);
-  }
-
-  void initState() {
-    super.initState();
-    getCatData();
-  }
+  String city = 'Seattle';
 
   @override
   Widget build(BuildContext context) {
+//    if (CityModel().getCity().isNotEmpty) city = CityModel().getCity();
     return Center(
       child: SizedBox(
         width: 250,
@@ -37,7 +29,7 @@ class _WeatherCardState extends State<WeatherCard> {
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             color: Colors.white,
-            child: updateTemp('Lagos')),
+            child: updateTemp(city)),
       ),
     );
   }
@@ -48,6 +40,19 @@ class _WeatherCardState extends State<WeatherCard> {
         builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
           if (snapshot.hasData) {
             Map content = snapshot.data;
+            if (content['weather'][0]['main'].toString() == 'Haze' ||
+                content['weather'][0]['main'].toString() == 'Clear' ||
+                content['weather'][0]['main'].toString() == 'Sunny') {
+              weatherImage = 'assets/images/sun.png';
+            } else if (content['weather'][0]['main'].toString() == 'Clouds') {
+              weatherImage = 'assets/images/cloud.png';
+            } else if (content['weather'][0]['main'].toString() == 'Rain') {
+              weatherImage = 'assets/images/rain.png';
+            } else if (content['weather'][0]['main'].toString() == 'Snow') {
+              weatherImage = 'assets/images/snow.png';
+            } else if (content['weather'][0]['main'].toString() == 'Thunder') {
+              weatherImage = 'assets/images/thunder.png';
+            }
             return Column(
               children: [
                 SizedBox(

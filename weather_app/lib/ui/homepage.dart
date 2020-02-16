@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:weather_app/model/citymodel.dart';
 import 'package:weather_app/ui/weathercard.dart';
 
 class HomePage extends StatefulWidget {
@@ -27,6 +28,8 @@ class _HomePageState extends State<HomePage> {
                     color: Colors.blueGrey, fontSize: 20, fontFamily: 'PTsans'),
                 decoration: InputDecoration(
                   border: null,
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white)),
                   hintText: 'Search City Here',
                   hintStyle: new TextStyle(
                       color: Colors.blueGrey,
@@ -42,15 +45,27 @@ class _HomePageState extends State<HomePage> {
           color: Colors.blueGrey,
         ),
         actions: <Widget>[
-          new IconButton(
-            onPressed: () {
-              setState(() {
-                this.isSearching = !this.isSearching;
-              });
-            },
-            icon: isSearching ? Icon(Icons.cancel) : Icon(Icons.search),
-            color: Colors.blueGrey,
-          ),
+          isSearching
+              ? new IconButton(
+                  onPressed: () {
+                    setState(() {
+                      this.isSearching = false;
+                    });
+                    String city = cityController.text;
+                    CityModel().setCity(city);
+                  },
+                  icon: Icon(Icons.check_circle),
+                  color: Colors.blueGrey,
+                )
+              : new IconButton(
+                  onPressed: () {
+                    setState(() {
+                      this.isSearching = true;
+                    });
+                  },
+                  icon: Icon(Icons.search),
+                  color: Colors.blueGrey,
+                )
         ],
       ),
       body: Stack(
