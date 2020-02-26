@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:weather_app/api/weatherapi.dart';
 import 'package:weather_app/model/citymodel.dart';
+import 'package:weather_app/ui/homepage.dart';
 
 class WeatherCard extends StatefulWidget {
   const WeatherCard({
@@ -8,18 +10,37 @@ class WeatherCard extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _WeatherCardState createState() => _WeatherCardState();
+  WeatherCardState createState() => WeatherCardState();
 }
 
-class _WeatherCardState extends State<WeatherCard> {
+class WeatherCardState extends State<WeatherCard> {
   String weatherImage = 'assets/images/sun.png';
   Map weather;
   List features;
-  String city = 'Seattle';
+  String defaultCity = 'Seattle';
+  String cityEntered;
+
+  Future<Map> weatherFuture;
+
+  Future<Map> getWeather() async {
+    if(HomePageState().city == null){
+      weatherFuture = WeatherAPI().getWeatherData(defaultCity);
+      debugPrint('Called Again: ${HomePageState().city}');
+    }else if(HomePageState().city != null){
+      weatherFuture = WeatherAPI().getWeatherData(HomePageState().city);
+      debugPrint('Called Again: ${HomePageState().city}');
+    }
+    return await weatherFuture;
+  }
+
+  void initState() {
+    super.initState();
+//    weatherFuture = getWeather(cityEntered);
+  }
 
   @override
   Widget build(BuildContext context) {
-//    if (CityModel().getCity().isNotEmpty) city = CityModel().getCity();
+
     return Center(
       child: SizedBox(
         width: 250,
@@ -29,14 +50,14 @@ class _WeatherCardState extends State<WeatherCard> {
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             color: Colors.white,
-            child: updateTemp(city)),
+            child: updateTemp()),
       ),
     );
   }
 
-  FutureBuilder updateTemp(String city) {
+  FutureBuilder updateTemp() {
     return FutureBuilder<Map>(
-        future: WeatherAPI().getWeatherData(city),
+        future: getWeather(),
         builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
           if (snapshot.hasData) {
             Map content = snapshot.data;
@@ -200,12 +221,20 @@ class _WeatherCardState extends State<WeatherCard> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text('Check your Internet',
-                      style: TextStyle(
-                          color: Colors.blueGrey,
-                          fontSize: 21,
-                          fontFamily: 'PTsans',
-                          fontWeight: FontWeight.w500)),
+                  Image.asset(
+                    'assets/images/wifi.png',
+                    height: 90,
+                    width: 90,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Text('Check your Internet',
+                        style: TextStyle(
+                            color: Color(0xFF4CAEFE),
+                            fontSize: 21,
+                            fontFamily: 'PTsans',
+                            fontWeight: FontWeight.w500)),
+                  ),
                 ],
               ),
             ));

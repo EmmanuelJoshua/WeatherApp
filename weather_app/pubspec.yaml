@@ -42,6 +42,7 @@ flutter:
 
   assets:
   - assets/images/umbrella.png
+  - assets/images/wifi.png
   - assets/images/cloud.png
   - assets/images/snow.png
   - assets/images/rain.png
